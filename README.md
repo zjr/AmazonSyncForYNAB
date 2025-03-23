@@ -1,14 +1,13 @@
-This project is not actively worked on as I re-wrote it in JS and launched as ["Ace My Budget"](https://acemybudget.com)
-
-
-
 # Amazon For YNAB
 
 ## Context & Purpose
 
-Amazon transactions show up in YNAB as "Amazon.com" in YNAB with no further description by default. This makes it difficult to categorize and understand historical transactions as they have no indication of the item purchased.
+Amazon transactions show up in YNAB as "Amazon.com" in YNAB with no further
+description by default. This makes it difficult to categorize and understand
+historical transactions as they have no indication of the item purchased.
 
-The purpose of this project is to reconcile Amazon order item data into the memo of your YNAB transactions.
+The purpose of this project is to reconcile Amazon order item data into the
+memo of your YNAB transactions.
 
 ## Setup & Usage
 
@@ -18,11 +17,12 @@ The purpose of this project is to reconcile Amazon order item data into the memo
 
 ### Adding Credentials
 
-You will need to add your personal credentials in a file relative to the project root:
-`{root}/secrets/credentials.ini`
+You will need to add your personal credentials in a file relative to the
+project root: `{root}/secrets/credentials.ini`.
 
 The file should have the format:
-```
+
+```ini
 [DEFAULT]
 otpSecret={otpSecret}
 userEmail=foo@bar.com
@@ -30,7 +30,10 @@ userPassword=mySecurePasswordInPlaintextLol
 ynabToken=mySecureTokenInPlaintextHaha
 ```
 
-otpSecret is only required if your Amazon account is protected by OTP. To get this secret you can go to the OTP setup page and set up TFA, scan the QR code with a generic QR Code Reader - the returned data string contains your OTP secret.
+`otpSecret` is only required if your Amazon account is protected by OTP. To get
+this secret you can go to the OTP setup page and set up TFA, scan the QR code
+with a generic QR Code Reader - the returned data string contains your OTP
+secret.
 
 ### Running
 
@@ -38,4 +41,5 @@ otpSecret is only required if your Amazon account is protected by OTP. To get th
 
 ## Contributing
 
-Contributions are welcome. Please create a pull request with an adequate description of your change.
+Contributions are welcome. Please create a pull request with an adequate
+description of your change.
