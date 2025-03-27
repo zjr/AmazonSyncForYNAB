@@ -1,11 +1,15 @@
+import platform
+import time
+
 import pyotp
 from bs4 import BeautifulSoup
-import time
 from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+
 from amazon_client.amazon_client import AmazonClient
-import platform
 
 ORDERS_PAGE = "https://www.amazon.com/gp/css/summary/print.html/ref=ppx_yo_dt_b_invoice_o00?ie=UTF8&orderID={}"
 
@@ -28,7 +32,8 @@ class AmazonSeleniumClient(AmazonClient):
             options = ChromeOptions()
             options.add_argument("--headless")
             self.driver = webdriver.Chrome(
-                ChromeDriverManager().install(), options=options
+                service=ChromeService(ChromeDriverManager().install()),
+                options=options,
             )
             print("Successfully initialized Chrome Selenium Webdriver")
 
@@ -49,40 +54,40 @@ class AmazonSeleniumClient(AmazonClient):
 
         self.driver.get("https://amazon.com")
         time.sleep(1)
-        accountNav = self.driver.find_element_by_xpath("//a[@data-nav-role ='signin']")
+        accountNav = self.driver.find_element(By.XPATH, "//a[@data-nav-role ='signin']")
         accountNav.click()
         time.sleep(1)
 
-        emailEntry = self.driver.find_element_by_id("ap_email")
+        emailEntry = self.driver.find_element(By.ID, "ap_email")
         emailEntry.clear()
         emailEntry.send_keys(self.userEmail)
-        self.driver.find_element_by_id("continue").click()
+        self.driver.find_element(By.ID, "continue").click()
 
         time.sleep(1)
 
-        passwordEntry = self.driver.find_element_by_id("ap_password")
+        passwordEntry = self.driver.find_element(By.ID, "ap_password")
         passwordEntry.clear()
         passwordEntry.send_keys(self.userPassword)
-        self.driver.find_element_by_name("rememberMe").click()
-        self.driver.find_element_by_id("signInSubmit").click()
+        self.driver.find_element(By.NAME, "rememberMe").click()
+        self.driver.find_element(By.ID, "signInSubmit").click()
 
         time.sleep(1)
 
-        totpSelect = self.driver.find_element_by_xpath(
-            "//input[contains(@value,'TOTP')]"
+        totpSelect = self.driver.find_element(
+            By.XPATH, "//input[contains(@value,'TOTP')]"
         )
         totpSelect.click()
 
-        sendCode = self.driver.find_element_by_xpath("//input[@id = 'auth-send-code']")
+        sendCode = self.driver.find_element(By.XPATH, "//input[@id = 'auth-send-code']")
         sendCode.click()
 
         time.sleep(1)
 
-        otpEntry = self.driver.find_element_by_id("auth-mfa-otpcode")
+        otpEntry = self.driver.find_element(By.ID, "auth-mfa-otpcode")
         otpEntry.clear()
         otpEntry.send_keys(totp.now())
-        self.driver.find_element_by_id("auth-mfa-remember-device").click()
-        self.driver.find_element_by_id("auth-signin-button").click()
+        self.driver.find_element(By.ID, "auth-mfa-remember-device").click()
+        self.driver.find_element(By.ID, "auth-signin-button").click()
         time.sleep(1)
 
     def signIn(self):
@@ -97,8 +102,8 @@ class AmazonSeleniumClient(AmazonClient):
 
     def interpretDriverErrorPage(self):
         try:
-            failElem = self.driver.find_element_by_xpath(
-                "//*[contains(text(),'not a robot')]"
+            failElem = self.driver.find_element(
+                By.XPATH, "//*[contains(text(),'not a robot')]"
             )
             print(
                 "Blocked by Amazon anti-robot. Circumnavigating this is unsupported. Please try again later."
