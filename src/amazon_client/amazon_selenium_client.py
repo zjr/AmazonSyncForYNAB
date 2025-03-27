@@ -1,5 +1,6 @@
 import platform
 import time
+from textwrap import dedent
 
 import pyotp
 from bs4 import BeautifulSoup
@@ -93,7 +94,7 @@ class AmazonSeleniumClient(AmazonClient):
     def signIn(self):
         try:
             self.doSignIn()
-        except:
+        except Exception:
             print("Amazon sign-in failed. Dumping page source to pagedump.txt")
             with open("pagedump.txt", "w") as f:
                 f.write(self.driver.page_source)
@@ -105,10 +106,17 @@ class AmazonSeleniumClient(AmazonClient):
             failElem = self.driver.find_element(
                 By.XPATH, "//*[contains(text(),'not a robot')]"
             )
-            print(
-                "Blocked by Amazon anti-robot. Circumnavigating this is unsupported. Please try again later."
-            )
-        except:
+            if failElem:
+                print(
+                    dedent(
+                        """\
+                        Blocked by Amazon anti-robot.
+                        Circumnavigating this is unsupported.
+                        Please try again later.
+                        """
+                    )
+                )
+        except Exception:
             pass
 
     def getInvoicePage(self, orderID):
