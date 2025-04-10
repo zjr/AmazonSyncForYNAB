@@ -24,7 +24,7 @@ def main(amazonClient):
         try:
             iPage = amazonClient.getInvoicePage(orderID)
             afterTaxItems, transactions = parser.parseInvoicePage(iPage)
-            if afterTaxItems == None or transactions == None:
+            if afterTaxItems is None or transactions is None:
                 continue
             matched = matcher.matchAmazonTransactions(afterTaxItems, transactions)
             amazonT.append(matched)
@@ -39,4 +39,3 @@ def main(amazonClient):
 if __name__ == "__main__":
     amazonSeleniumClient = AmazonSeleniumClient(userEmail, userPassword, otpSecret)
     main(amazonSeleniumClient)
-

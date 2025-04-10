@@ -17,11 +17,14 @@ RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
 # The runtime image, used to just run the code provided its virtual environment
 FROM python:3.12.4-slim-bookworm AS runtime
 
+RUN apt update && apt install -y chromium chromium-driver
+
 ENV PATH="/app/.venv/bin:$PATH"
 ENV VIRTUAL_ENV=/app/.venv 
 
-COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
+WORKDIR /app
 
+COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 COPY secrets/ secrets/
 COPY src/ .
 
