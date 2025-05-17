@@ -16,7 +16,7 @@ ORDERS_PAGE = "https://www.amazon.com/gp/css/summary/print.html/ref=ppx_yo_dt_b_
 
 
 class AmazonSeleniumClient(AmazonClient):
-    def __init__(self, userEmail, userPassword, otpSecret):
+    def __init__(self, userEmail, userPassword, otpSecret, args):
 
         self.userEmail = userEmail
         self.userPassword = userPassword
@@ -34,12 +34,13 @@ class AmazonSeleniumClient(AmazonClient):
             )
 
             options = Options()
-            options.add_argument("--headless")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument(
                 '--user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"'
             )
+            if not args.debug:
+                options.add_argument("--headless")
 
             self.driver = webdriver.Chrome(options=options)
 

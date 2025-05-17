@@ -1,11 +1,19 @@
+import argparse
 import configparser
-
 import parser
-import matcher
-
-from ynab_client import YNABClient
-from amazon_client.amazon_selenium_client import AmazonSeleniumClient
 from datetime import date, timedelta
+
+import matcher
+from amazon_client.amazon_selenium_client import AmazonSeleniumClient
+from ynab_client import YNABClient
+
+ap = argparse.ArgumentParser(
+    prog="AmazonSyncToYNAB",
+    description="Visits your Amanzon account, finds transactions and adds info to the memo in YNAB.",
+)
+
+ap.add_argument("--debug", action="store_true")
+args = ap.parse_args()
 
 # TODO: Use encrypted secrets config
 config = configparser.ConfigParser()
@@ -37,5 +45,7 @@ def main(amazonClient):
 
 
 if __name__ == "__main__":
-    amazonSeleniumClient = AmazonSeleniumClient(userEmail, userPassword, otpSecret)
+    amazonSeleniumClient = AmazonSeleniumClient(
+        userEmail, userPassword, otpSecret, args
+    )
     main(amazonSeleniumClient)
