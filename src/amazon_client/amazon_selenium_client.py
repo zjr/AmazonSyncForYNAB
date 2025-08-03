@@ -13,6 +13,7 @@ from selenium.webdriver.chrome.options import Options
 
 
 ORDERS_PAGE = "https://www.amazon.com/gp/css/summary/print.html/ref=ppx_yo_dt_b_invoice_o00?ie=UTF8&orderID={}"
+TXN_PAGE = "https://www.amazon.com/cpe/yourpayments/transactions?transactionTag={}"
 
 
 class AmazonSeleniumClient(AmazonClient):
@@ -69,12 +70,23 @@ class AmazonSeleniumClient(AmazonClient):
         # Check here if you're already logged in!!
 
         print("clicking signin")
-        accountNav = self.driver.find_element(By.XPATH, "//a[@data-nav-role ='signin']")
-        accountNav.click()
-        time.sleep(1)
+        try:
+            accountNav = self.driver.find_element(
+                By.XPATH, "//a[@data-nav-role ='signin']"
+            )
+            accountNav.click()
+            time.sleep(1)
+        except Exception as e:
+            print(e)
+            print("trying other sign in…")
+            accountNav = self.driver.find_element(
+                By.XPATH, "//a[@data-nav-role ='signin']"
+            )
+            accountNav.click()
+            time.sleep(1)
 
         print("inputting email")
-        emailEntry = self.driver.find_element(By.ID, "ap_email")
+        emailEntry = self.driver.find_element(By.ID, "ap_email_login")
         emailEntry.clear()
         emailEntry.send_keys(self.userEmail)
         self.driver.find_element(By.ID, "continue").click()
@@ -143,4 +155,9 @@ class AmazonSeleniumClient(AmazonClient):
     def getInvoicePage(self, orderID):
         myOrderPage = ORDERS_PAGE.format(orderID)
         self.driver.get(myOrderPage)
+        return self.driver.page_source
+
+    def getTxnPage(self, orderID):
+        txnPage = TXN_PAGE.format(orderID)
+        self.driver.get(txnPage)
         return self.driver.page_source

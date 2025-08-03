@@ -31,7 +31,8 @@ def main(amazonClient):
     for orderID in orderIDs:
         try:
             iPage = amazonClient.getInvoicePage(orderID)
-            afterTaxItems, transactions = parser.parseInvoicePage(iPage)
+            tPage = amazonClient.getTxnPage(orderID)
+            afterTaxItems, transactions = parser.parseInvoicePage(iPage, tPage)
             if afterTaxItems is None or transactions is None:
                 continue
             matched = matcher.matchAmazonTransactions(afterTaxItems, transactions)
