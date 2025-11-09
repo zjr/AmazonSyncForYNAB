@@ -114,17 +114,6 @@ class AmazonSeleniumClient(AmazonClient):
         self.driver.find_element(By.ID, "signInSubmit").click()
         time.sleep(1)
 
-        # print("looking for totp")
-        # totpSelect = self.driver.find_element(
-        #     By.XPATH, "//input[contains(@value,'TOTP')]"
-        # )
-        # totpSelect.click()
-        #
-        # print("sendcode click")
-        # sendCode = self.driver.find_element(By.XPATH, "//input[@id = 'auth-send-code']")
-        # sendCode.click()
-        # time.sleep(1)
-
         print("looking for otp entry")
         otpEntry = self.driver.find_element(By.ID, "auth-mfa-otpcode")
         otpEntry.clear()
