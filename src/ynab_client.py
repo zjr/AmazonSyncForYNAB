@@ -37,7 +37,7 @@ class YNABClient(object):
         if rawResponse.status_code != 200:
             return None
         transactions = resp["data"]["transactions"]
-        amazon = re.compile(r"[[aA]mazon|AMZN]")
+        amazon = re.compile(r"([aA]mazon|AMZN)")
         onlyAmazon = filter(lambda item: amazon.match(item["payee_name"]), transactions)
         onlyAmazon = list(onlyAmazon)
         for i in range(len(onlyAmazon)):
