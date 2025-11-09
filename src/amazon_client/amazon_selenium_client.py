@@ -55,7 +55,13 @@ class AmazonSeleniumClient(AmazonClient):
         for pageNumber in range(pages):
             self.driver.get(orderPage.format(pageNumber * 10))
             soup = BeautifulSoup(self.driver.page_source, "html.parser")
-            orderIDs.extend([i.getText() for i in soup.find_all("bdi")])
+            orderIDs.extend(
+                [
+                    i.find_next_sibling("span").get_text()
+                    for i in soup.find_all("span", string="Order #")
+                ]
+            )
+            print(orderIDs)
         return orderIDs
 
     def doSignIn(self):
