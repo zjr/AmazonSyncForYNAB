@@ -1,7 +1,9 @@
-'''
-    afterTaxItems: [(itemName, afterTaxPrice)]
-    transactions: [creditCardTransaction]
-'''
+"""
+afterTaxItems: [(itemName, afterTaxPrice)]
+transactions: [creditCardTransaction]
+"""
+
+
 # TODO: improve this algorithm and test for correctness
 def matchAmazonTransactions(afterTaxItems, transactions):
     result = {}
@@ -15,7 +17,8 @@ def matchAmazonTransactions(afterTaxItems, transactions):
         result[price] = itemsPriceComboMap[price]
     return result
 
-# Amber contributed this nice algorithm which will break if 
+
+# Amber contributed this nice algorithm which will break if
 # there are different combinations that match the same transaction value
 # TODO: Fix this
 def getItemsCombination(afterTaxItems):
@@ -25,33 +28,42 @@ def getItemsCombination(afterTaxItems):
     curItem = afterTaxItems[-1]
     prices = list(prevCombinations.keys())
     for price in prices:
-        prevCombinations[price+curItem[1]] = prevCombinations[price] + [curItem[0]]
+        prevCombinations[price + curItem[1]] = prevCombinations[price] + [curItem[0]]
         prevCombinations[curItem[1]] = [curItem[0]]
     return prevCombinations
 
-'''
+
+"""
     amazonT: [{ccTransactionInCents: [purchasedItems]}, ...]
     ynabT: [{"id": transactionID, "memo": existingMemo, "amount": amtInCents, ...}]
 
     return: [{"id": transactionID}, "memo": purchasedItems]
-'''
+"""
+
+
 def matchAmazonToYNAB(amazonTransactions, ynabTransactions):
-  patch = []
-  for yt in ynabTransactions:
-      amtInCents = -yt["amount"]
-      matched = False
-      for at in amazonTransactions:
-        if amtInCents in at:
-            # We have a match!
-            # Truncate Items.
-            truncatedTransactions = list(map(lambda x: " ".join(x.split()[:6]), at[amtInCents]))
-            # Only append to patch if memo != existing memo
-            memo = "|".join(truncatedTransactions)
-            if yt["memo"] == memo:
-                print(f"transaction {memo} already set, excluding from match")
-            else:
-                patch.append({"id": yt["id"], "memo": memo})
-            matched = True
-      if not matched:
-          print (f"YNAB transaction of amt {amtInCents} not matched to any known amazon order")
-  return patch
+    patch = []
+    for yt in ynabTransactions:
+        amtInCents = -yt["amount"]
+        matched = False
+        for at in amazonTransactions:
+            print(at)
+            if amtInCents in at:
+                # We have a match!
+                # Truncate Items.
+                truncatedTransactions = list(
+                    map(lambda x: " ".join(x.split()[:6]), at[amtInCents])
+                )
+                # Only append to patch if memo != existing memo
+                memo = "|".join(truncatedTransactions)
+                if yt["memo"] == memo:
+                    print(f"transaction {memo} already set, excluding from match")
+                else:
+                    patch.append({"id": yt["id"], "memo": memo})
+                matched = True
+        if not matched:
+            print(
+                f"YNAB transaction of amt {amtInCents} not matched to any known amazon order"
+            )
+    return patch
+

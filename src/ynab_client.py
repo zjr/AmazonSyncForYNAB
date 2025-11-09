@@ -2,6 +2,7 @@ import requests
 import json
 import re
 
+
 class YNABClient(object):
     BASE_URL = "https://api.youneedabudget.com/v1"
 
@@ -17,32 +18,36 @@ class YNABClient(object):
             "Authorization": f"Bearer {self.token}",
             "accept": "application/json",
         }
-        rawResponse = requests.get(url ,headers=headers)
-        resp = json.loads(rawResponse.content.decode('utf-8'))
+        rawResponse = requests.get(url, headers=headers)
+        resp = json.loads(rawResponse.content.decode("utf-8"))
         return resp["data"]["budgets"][0]["id"]
 
     def list_recent_amazon_transactions(self, sinceDate):
         priorDateStr = sinceDate.strftime("%Y-%m-%d")
-        url = self.BASE_URL + f"/budgets/{self.budgetID}/transactions?since_date={priorDateStr}"
+        url = (
+            self.BASE_URL
+            + f"/budgets/{self.budgetID}/transactions?since_date={priorDateStr}"
+        )
         headers = {
             "Authorization": f"Bearer {self.token}",
             "accept": "application/json",
         }
-        rawResponse = requests.get(url ,headers=headers)
-        resp = json.loads(rawResponse.content.decode('utf-8'))
+        rawResponse = requests.get(url, headers=headers)
+        resp = json.loads(rawResponse.content.decode("utf-8"))
         if rawResponse.status_code != 200:
             return None
         transactions = resp["data"]["transactions"]
         amazon = re.compile(r"[[aA]mazon|AMZN]")
-        onlyAmazon = filter(lambda item: amazon.match(item["payee_name"]),transactions)
+        onlyAmazon = filter(lambda item: amazon.match(item["payee_name"]), transactions)
         onlyAmazon = list(onlyAmazon)
         for i in range(len(onlyAmazon)):
-            onlyAmazon[i]["amount"] = onlyAmazon[i]["amount"]//10
+            onlyAmazon[i]["amount"] = onlyAmazon[i]["amount"] // 10
         return list(onlyAmazon)
 
-    '''
+    """
         transactions: [{"id": id, ...}]
-    '''
+    """
+
     def patch_transactions(self, transactions):
         if len(transactions) == 0:
             print("No transactions to patch, skipping...")
@@ -51,11 +56,12 @@ class YNABClient(object):
         headers = {
             "Authorization": f"Bearer {self.token}",
             "accept": "application/json",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
         data = json.dumps({"transactions": transactions})
         resp = requests.patch(url, data, headers=headers)
         if resp.status_code != 200:
-            print (f"Something went wrong, got response: {resp.content}")
+            print(f"Something went wrong, got response: {resp.content}")
         else:
-            print (f"Successfully updated transactions {transactions}")
+            print(f"Successfully updated transactions {transactions}")
+
