@@ -73,23 +73,29 @@ class AmazonSeleniumClient(AmazonClient):
         self.driver.get("https://amazon.com")
         time.sleep(1)
 
-        # Check here if you're already logged in!!
-
         print("clicking signin")
         try:
             accountNav = self.driver.find_element(
-                By.XPATH, "//a[@data-nav-role ='signin']"
+                By.XPATH, "//a[@class=nav-action-signin-button]"
             )
             accountNav.click()
             time.sleep(1)
-        except Exception as e:
-            print(e)
+        except Exception:
             print("trying other sign in…")
-            accountNav = self.driver.find_element(
-                By.XPATH, "//a[@data-nav-role ='signin']"
-            )
-            accountNav.click()
-            time.sleep(1)
+            try:
+                accountNav = self.driver.find_element(
+                    By.XPATH, "//a[@data-nav-role ='signin']"
+                )
+                accountNav.click()
+                time.sleep(1)
+            except Exception:
+                print("check if signed in already…")
+                el = self.driver.find_element(By.XPATH, "//a[text() = 'Your Account']")
+                el.click()
+                time.sleep(1)
+                print("already signed in!")
+                time.sleep(300)
+                return
 
         print("inputting email")
         emailEntry = self.driver.find_element(By.ID, "ap_email_login")
