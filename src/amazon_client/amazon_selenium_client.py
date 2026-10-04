@@ -11,7 +11,6 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 
-
 ORDERS_PAGE = "https://www.amazon.com/gp/css/summary/print.html/ref=ppx_yo_dt_b_invoice_o00?ie=UTF8&orderID={}"
 TXN_PAGE = "https://www.amazon.com/cpe/yourpayments/transactions?transactionTag={}"
 
@@ -104,25 +103,44 @@ class AmazonSeleniumClient(AmazonClient):
         self.driver.find_element(By.ID, "continue").click()
         time.sleep(1)
 
-        print("inputting password")
-        passwordEntry = self.driver.find_element(By.ID, "ap_password")
-        passwordEntry.clear()
-        passwordEntry.send_keys(self.userPassword)
+        def inputPass():
+            print("inputting password")
+            passwordEntry = self.driver.find_element(By.ID, "ap_password")
+            passwordEntry.clear()
+            passwordEntry.send_keys(self.userPassword)
+
+        try:
+            inputPass()
+        except Exception:
+            print("could not find password input, looking for 'use password' button")
+            time.sleep(5)
+            self.driver.find_element(By.ID, "auth-signin-button").click()
+            time.sleep(1)
+            inputPass()
 
         print("clicking sign in & remember")
         # self.driver.find_element(By.NAME, "rememberMe").click() ## this has been removed?
         self.driver.find_element(By.ID, "signInSubmit").click()
         time.sleep(1)
 
-        print("looking for otp entry")
-        otpEntry = self.driver.find_element(By.ID, "auth-mfa-otpcode")
-        otpEntry.clear()
-        otpEntry.send_keys(totp.now())
+        def inputOtp(id="ap_otp_code"):
+            print("looking for otp entry")
+            otpEntry = self.driver.find_element(By.ID, id)
+            otpEntry.clear()
+            otpEntry.send_keys(totp.now())
 
-        print("submitting otp")
-        self.driver.find_element(By.ID, "auth-mfa-remember-device").click()
-        self.driver.find_element(By.ID, "auth-signin-button").click()
-        time.sleep(1)
+        try:
+            inputOtp()
+        except Exception:
+            inputOtp("auth-mfa-otpcode")
+
+        def submitOtp(id="auth-signin-button"):
+            print("submitting otp")
+            self.driver.find_element(By.ID, "auth-trust-device-checkbox").click()
+            self.driver.find_element(By.ID, id).click()
+            time.sleep(1)
+
+        submitOtp()
 
     def signIn(self):
         try:
@@ -142,14 +160,10 @@ class AmazonSeleniumClient(AmazonClient):
                 By.XPATH, "//*[contains(text(),'not a robot')]"
             )
             if failElem:
-                print(
-                    dedent(
-                        """\
+                print(dedent("""\
                         Blocked by Amazon anti-robot, circumnavigating this is unsupported.
                         Please try again later.
-                        """
-                    )
-                )
+                        """))
         except Exception:
             pass
 

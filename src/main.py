@@ -26,7 +26,7 @@ ynabToken = myConfig["ynabToken"]
 
 
 def main(amazonClient):
-    orderIDs = amazonClient.getAllOrderIDs(3)
+    orderIDs = amazonClient.getAllOrderIDs(2)
     amazonT = []
     for orderID in orderIDs:
         try:
